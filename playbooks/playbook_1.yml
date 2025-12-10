@@ -1,0 +1,17 @@
+- name: install and config nginx fedora
+  dnf:
+    name: openssh service
+    state: present
+
+- name: check ssh is enable
+  systemd:
+    name: sshd
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+- name: install nginx
+  dnf:
+    name: nginx
+    state: present
+
