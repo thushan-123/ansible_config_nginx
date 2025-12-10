@@ -43,3 +43,19 @@
       notify: restore selinux context
 
     - name: nginx config
+      copy:
+        dest: "{{ snginx_config_file_path }}"
+        content: |
+          server {
+            listen 80;
+            server_name_;
+            root {{ site_root }};
+            index index.html;
+
+            location / {
+              try_files $uri $uri/404;            
+            }
+          }
+      
+      notify:
+        - reload nginx
