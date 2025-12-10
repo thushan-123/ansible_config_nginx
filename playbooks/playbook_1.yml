@@ -1,0 +1,61 @@
+- name: Install config ssh and nginx on fedora os 
+  hosts: fedora_server
+  become: yes
+  vars:
+    site_name: web_site
+    site_root: /var/www/{{ site_name }}
+    nginx_config_file_path: /etc/nginx/conf.d/{{ site_name }}.conf
+  
+  tasks:
+    - name: install and config nginx fedora
+      dnf:
+        name: openssh service
+        state: present
+
+    - name: check ssh is enable
+      systemd:
+        name: sshd
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: install nginx
+      dnf:
+        name: nginx
+        state: present
+
+    - name: check site root
+      file: 
+          path: "{{ site_root }}"
+          state: directory
+          owner: nginx
+          group: nginx
+          mode: '0755'
+          recurse: yes
+
+    - name: copy web site to root path
+      copy:
+        src: files/index.html
+        dest: "{{ site_root }}/index.html"
+        owner: nginx
+        group: nginx
+        mode: "0644"
+      notify: restore selinux context
+
+    - name: nginx config
+      copy:
+        dest: "{{ snginx_config_file_path }}"
+        content: |
+          server {
+            listen 80;
+            server_name_;
+            root {{ site_root }};
+            index index.html;
+
+            location / {
+              try_files $uri $uri/404;            
+            }
+          }
+      
+      notify:
+        - reload nginx
