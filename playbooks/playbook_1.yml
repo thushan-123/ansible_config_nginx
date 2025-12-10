@@ -59,3 +59,17 @@
       
       notify:
         - reload nginx
+
+    - name: Ensure nginx is enabled and started
+      systemd:
+        name: nginx
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: Open HTTP in firewalld
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
