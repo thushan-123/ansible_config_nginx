@@ -32,3 +32,14 @@
           group: nginx
           mode: '0755'
           recurse: yes
+
+    - name: copy web site to root path
+      copy:
+        src: files/index.html
+        dest: "{{ site_root }}/index.html"
+        owner: nginx
+        group: nginx
+        mode: "0644"
+      notify: restore selinux context
+
+    - name: nginx config
