@@ -1,17 +1,27 @@
-- name: install and config nginx fedora
-  dnf:
-    name: openssh service
-    state: present
+- name: Install config ssh and nginx on fedora os 
+  hosts: fedora_server
+  become: yes
+  vars:
+    site_name: web_site
+    site_root: /var/www/{{ site_name }}
+    nginx_config_file_path: /etc/nginx/conf.d/{{ site_name }}.conf
+  
+  tasks:
+    - name: install and config nginx fedora
+      dnf:
+        name: openssh service
+        state: present
 
-- name: check ssh is enable
-  systemd:
-    name: sshd
-    enabled: yes
-    state: started
-    daemon_reload: yes
+    - name: check ssh is enable
+      systemd:
+        name: sshd
+        enabled: yes
+        state: started
+        daemon_reload: yes
 
-- name: install nginx
-  dnf:
-    name: nginx
-    state: present
+    - name: install nginx
+      dnf:
+        name: nginx
+        state: present
 
+    - name: check site root
