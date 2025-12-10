@@ -25,3 +25,10 @@
         state: present
 
     - name: check site root
+      file: 
+          path: "{{ site_root }}"
+          state: directory
+          owner: nginx
+          group: nginx
+          mode: '0755'
+          recurse: yes
