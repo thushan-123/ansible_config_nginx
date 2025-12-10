@@ -73,3 +73,25 @@
         permanent: yes
         state: enabled
         immediate: yes
+
+    - name: Ensure semanage is available (policycoreutils-python-utils)
+      dnf:
+        name: policycoreutils-python-utils
+        state: present
+      when: ansible_facts.selinux.status == "enabled"
+
+    - name: Set SELinux file context for site root (httpd_sys_content_t)
+      command: semanage fcontext -a -t httpd_sys_content_t "{{ site_root }}(/.*)?"
+      args:
+        warn: false
+      when: ansible_facts.selinux.status == "enabled"
+      notify: restore selinux context
+
+  handlers:
+    - name: reload nginx
+      systemd:
+        name: nginx
+        state: restarted
+
+    - name: restore selinux context
+      command: restorecon -Rv "{{ site_root }}"
